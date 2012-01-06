@@ -2,6 +2,7 @@ package com.force.labs.sensorgateway;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpExchange;
@@ -47,11 +49,34 @@ public class App extends HttpServlet {
         		hostname = response.getHostname();
         	}
         	
-        	logger.info(sendRequest(createRequest(hostname + "/services/apexrest/gwestr/sensor", "application/json", req.getInputStream())));
+        	String request = IOUtils.toString(req.getInputStream(), "UTF-8");
+        	
+        	String response = sendRequest(createRequest(hostname + "/services/apexrest/gwestr/sensor", "application/json", jsonifySensorParams(request)));
+        	resp.setStatus(HttpStatus.OK_200);
+        	resp.getWriter().write(response);
         	
 		} catch (Exception e) {
 			resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
 		}
+    }
+    
+    protected String jsonifySensorParams(String params) {
+    	SensorRequest sensor = new SensorRequest();
+    	
+    	String[] requestParams = params.split("&");
+    	for(int i = 0; i < 4; i++) {
+    		String[] keyValue = requestParams[i].split("=");
+    		if(keyValue[0] == "location") {
+    			sensor.setSensor(keyValue[1]);
+    		} else if(keyValue[0] == "T") {
+    			sensor.setTemperature(keyValue[1]);
+    		} else if(keyValue[0] == "M") {
+    			sensor.setMotion(keyValue[1]);
+    		} else if(keyValue[0] == "L") {
+    			sensor.setLight(keyValue[1]);
+    		}
+    	}
+    	return new Gson().toJson(sensor);
     }
     
     protected OAuthResponse getOAuthResponse() throws Exception {
@@ -111,7 +136,7 @@ public class App extends HttpServlet {
 		}
     }
     
-    protected class OAuthResponse {
+    protected static class OAuthResponse {
     	private String instance_url;
     	private String access_token;
 
@@ -123,13 +148,36 @@ public class App extends HttpServlet {
     		return instance_url;
     	}
     }
+    
+    protected static class SensorRequest {
+    	private String sensor;
+    	private String temperature;
+    	private String motion;
+    	private String light;
+    	
+		public void setSensor(String sensor) {
+			this.sensor = sensor;
+		}   
+		
+		public void setTemperature(String temperature) {
+			this.temperature = temperature;
+		}
+		
+		public void setMotion(String motion) {
+			this.motion = motion;
+		}
+		
+		public void setLight(String light) {
+			this.light = light;
+		}
+    }
 
     public static void main(String[] args) throws Exception{
         Server server = new Server(Integer.valueOf(System.getenv("PORT")));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/sensor");
+        context.setContextPath("/");
         server.setHandler(context);
-        context.addServlet(new ServletHolder(new App()),"/*");
+        context.addServlet(new ServletHolder(new App()),"/sensor/*");
         server.start();
         server.join();
     }
