@@ -58,7 +58,7 @@
                             <assembleDirectory>target</assembleDirectory>
                             <programs>
                                 <program>
-                                    <mainClass>App</mainClass>
+                                    <mainClass>com.force.labs.sensorgateway.App</mainClass>
                                     <name>SGW</name>
                                 </program>
                             </programs>
