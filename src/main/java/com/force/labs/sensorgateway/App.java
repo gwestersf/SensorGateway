@@ -32,10 +32,6 @@ import com.google.gson.Gson;
  */
 public class App extends HttpServlet {
 	
-	private static final String KEY = "3MVG9QDx8IX8nP5Rw1P20LB8DVGyB0wZF2_x5KOxdcKG4pBVsYSKnuO6RSW0mcfQ1hIBPI4hpsca8Ub1pHhxv";
-	private static final String SECRET = "3553113972897463468";
-	private static final String SECURITY_TOKEN = "O4sfLGuFMqTSX8aHUPXgAEsr";
-	
 	private String sessionId;
 	private String hostname;
 	private Date lastRefresh;
@@ -65,10 +61,10 @@ public class App extends HttpServlet {
 		lastRefresh = new Date(System.currentTimeMillis());
 		
 		String body = "grant_type=password" + "&" +
-			"client_id=" + KEY + "&" +
-			"client_secret=" + SECRET + "&" +
+			"client_id=" + System.getenv("KEY") + "&" +
+			"client_secret=" + System.getenv("SECRET") + "&" +
 			"username=" + System.getenv("CRM_USER") + "&" +
-			"password=" + System.getenv("CRM_PASSWORD") + SECURITY_TOKEN;
+			"password=" + System.getenv("CRM_PASSWORD") + System.getenv("TOKEN");
 		
 		return sendRequest(createRequest("https://login.salesforce.com/services/oauth2/token", "application/x-www-form-urlencoded", body));
     }
