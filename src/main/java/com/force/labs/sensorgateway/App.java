@@ -38,6 +38,7 @@ public class App extends HttpServlet {
 	private String sessionId;
 	private String hostname;
 	private Date lastRefresh;
+	
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
