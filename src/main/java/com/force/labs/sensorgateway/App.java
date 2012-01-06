@@ -66,13 +66,13 @@ public class App extends HttpServlet {
     	String[] requestParams = params.split("&");
     	for(int i = 0; i < 4; i++) {
     		String[] keyValue = requestParams[i].split("=");
-    		if(keyValue[0] == "location") {
+    		if(keyValue[0].equals("location")) {
     			sensor.setSensor(keyValue[1]);
-    		} else if(keyValue[0] == "T") {
+    		} else if(keyValue[0].equals("T")) {
     			sensor.setTemperature(keyValue[1]);
-    		} else if(keyValue[0] == "M") {
+    		} else if(keyValue[0].equals("M")) {
     			sensor.setMotion(keyValue[1]);
-    		} else if(keyValue[0] == "L") {
+    		} else if(keyValue[0].equals("L")) {
     			sensor.setLight(keyValue[1]);
     		}
     	}
@@ -100,6 +100,9 @@ public class App extends HttpServlet {
 		exchange.setMethod("POST");
 		exchange.setURL(URL);
 		exchange.setRequestHeader("Content-Type", contentType); 
+		if(sessionId != null) {
+			exchange.setRequestHeader("Authorization: ", "OAuth " + sessionId); 
+		}
 
 		AbstractBuffer content = new ByteArrayBuffer(body.getBytes("UTF-8")); 
         exchange.setRequestContent(content); 
@@ -112,7 +115,7 @@ public class App extends HttpServlet {
 		exchange.setMethod("POST");
 		exchange.setURL(URL);
 		exchange.setRequestHeader("Content-Type", contentType); 
-		exchange.setRequestHeader("Authorization: ", "OAuth " + sessionId); 
+		exchange.setRequestHeader("Authorization: ", "OAuth " + sessionId.split("!")[1]); 
 
         exchange.setRequestContentSource(stream);
         exchange.setScheme(HttpSchemes.HTTPS_BUFFER);
