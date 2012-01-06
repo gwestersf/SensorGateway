@@ -87,6 +87,7 @@ public class App extends HttpServlet {
 		exchange.setMethod("POST");
 		exchange.setURL(URL);
 		exchange.setRequestHeader("Content-Type", contentType); 
+		exchange.setRequestHeader("Authorization: ", "OAuth " + sessionId); 
 
         exchange.setRequestContentSource(stream);
         exchange.setScheme(HttpSchemes.HTTPS_BUFFER);
