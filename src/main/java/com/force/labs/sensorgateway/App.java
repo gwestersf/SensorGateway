@@ -33,7 +33,7 @@ import com.google.gson.Gson;
  */
 public class App extends HttpServlet {
 	
-	private Logger logger = Logger.getLogger(App.class.getName());
+	private Gson gson = new Gson();
 	
 	private String sessionId;
 	private String hostname;
@@ -47,6 +47,7 @@ public class App extends HttpServlet {
         		OAuthResponse response = getOAuthResponse();
         		sessionId = response.getSessionId();
         		hostname = response.getHostname();
+        		lastRefresh = new Date(System.currentTimeMillis());
         	}
         	
         	String request = IOUtils.toString(req.getInputStream(), "UTF-8");
@@ -76,11 +77,11 @@ public class App extends HttpServlet {
     			sensor.setLight(keyValue[1]);
     		}
     	}
-    	return new Gson().toJson(sensor);
+    	return gson.toJson(sensor);
     }
     
     protected OAuthResponse getOAuthResponse() throws Exception {
-		return new Gson().fromJson(doSalesforceLogin(), OAuthResponse.class);
+		return gson.fromJson(doSalesforceLogin(), OAuthResponse.class);
     }
     
     protected String doSalesforceLogin() throws Exception {
