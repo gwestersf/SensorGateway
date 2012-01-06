@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.client.Address;
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpExchange;
@@ -21,7 +21,6 @@ import org.eclipse.jetty.io.ByteArrayBuffer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.UrlEncoded;
 
 import com.google.gson.Gson;
 
@@ -31,6 +30,8 @@ import com.google.gson.Gson;
  *
  */
 public class App extends HttpServlet {
+	
+	private Logger logger = Logger.getLogger(App.class.getName());
 	
 	private String sessionId;
 	private String hostname;
@@ -46,8 +47,8 @@ public class App extends HttpServlet {
         		hostname = response.getHostname();
         	}
         	
-    		sendRequest(createRequest(hostname + "/services/apexrest/gwestr/sensor", "application/json", req.getInputStream()));
-        		
+        	logger.info(sendRequest(createRequest(hostname + "/services/apexrest/gwestr/sensor", "application/json", req.getInputStream())));
+        	
 		} catch (Exception e) {
 			resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
 		}
