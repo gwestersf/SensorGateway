@@ -54,8 +54,13 @@ public class App extends HttpServlet {
         	String request = IOUtils.toString(req.getInputStream(), "UTF-8");
         	
         	String response = sendRequest(createRequest(hostname + "/services/apexrest/gwestr/sensor", "application/json", jsonifySensorParams(request)));
-        	resp.setStatus(HttpStatus.OK_200);
-        	resp.getWriter().write(response);
+        	
+        	if(response == null) {
+        		resp.setStatus(HttpStatus.NO_CONTENT_204);
+        	} else {
+        		resp.setStatus(HttpStatus.OK_200);
+        		resp.getWriter().write(response);
+        	}
         	
 		} catch (Exception e) {
 			resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
