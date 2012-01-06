@@ -7,32 +7,31 @@ import junit.framework.TestSuite;
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
-{
+public class AppTest extends TestCase {
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public AppTest( String testName )
-    {
+    public AppTest(String testName) {
         super( testName );
     }
 
     /**
      * @return the suite of tests being tested
      */
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite( AppTest.class );
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+
+    public void testOAuthResponds() throws Exception {
+        App app = new App();
+        String response = app.doSalesforceLogin();
+        assertNotNull(response);
+        assertTrue(response.contains("id"));
+        assertFalse(response.contains("error"));
     }
+    
+    
 }
