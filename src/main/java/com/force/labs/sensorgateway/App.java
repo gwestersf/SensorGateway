@@ -33,8 +33,6 @@ import com.google.gson.Gson;
  */
 public class App extends HttpServlet {
 	
-	private Gson gson = new Gson();
-	
 	private String sessionId;
 	private String hostname;
 	private Date lastRefresh;
@@ -68,6 +66,7 @@ public class App extends HttpServlet {
     }
     
     protected String jsonifySensorParams(String params) {
+    	Gson gson = new Gson();
     	SensorRequest sensor = new SensorRequest();
     	
     	String[] requestParams = params.split("&");
@@ -83,11 +82,16 @@ public class App extends HttpServlet {
     			sensor.setLight(keyValue[1]);
     		}
     	}
-    	return gson.toJson(sensor);
+    	String json = gson.toJson(sensor);
+    	gson = null;
+    	return json;
     }
     
     protected OAuthResponse getOAuthResponse() throws Exception {
-		return gson.fromJson(doSalesforceLogin(), OAuthResponse.class);
+    	Gson gson = new Gson();
+    	OAuthResponse json = gson.fromJson(doSalesforceLogin(), OAuthResponse.class);
+    	gson = null;
+		return json;
     }
     
     protected String doSalesforceLogin() throws Exception {
@@ -140,7 +144,9 @@ public class App extends HttpServlet {
 		// block until we get the response
 		int exchangeState = exchange.waitForDone();
 		if (exchangeState == HttpExchange.STATUS_COMPLETED) {
-			return exchange.getResponseContent();
+			String response = exchange.getResponseContent();
+			client.stop();
+			return response;
 		} else {
 			throw new IllegalStateException("Waited and did not get a response from salesforce.");
 		}
